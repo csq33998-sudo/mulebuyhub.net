@@ -9,3 +9,5 @@ maisonlooks-products.html
 .tmp/
 preview.log
 preview.err.log
+
+.vercel
