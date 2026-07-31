@@ -1,0 +1,46 @@
+---
+const {
+  title = "Mulebuy Spreadsheet 2026 | Verified Finds, QC Photos & Links",
+  description = "Browse a fast Mulebuy spreadsheet with curated shoes, hoodies, t-shirts, jackets, accessories, QC notes, and updated shopping links."
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/png" href="/mulebuy-icon.png" />
+    <link rel="apple-touch-icon" href="/mulebuy-icon.png" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:image" content={new URL("/og.png", Astro.site).toString()} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL("/og.png", Astro.site).toString()} />
+    <script is:inline>
+      (() => {
+        const storageKey = "mulebuyhub-theme";
+        let storedTheme = null;
+
+        try {
+          storedTheme = localStorage.getItem(storageKey);
+        } catch {
+          storedTheme = null;
+        }
+
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = storedTheme || (prefersDark ? "dark" : "light");
+
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

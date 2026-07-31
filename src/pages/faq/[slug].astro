@@ -1,0 +1,65 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import { faq } from "../../data/faq";
+import { safeExternalUrl, safeJsonLd } from "../../utils/security";
+
+export function getStaticPaths() {
+  return faq.map((item) => ({
+    params: { slug: item.slug },
+    props: { item }
+  }));
+}
+
+const { item } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }
+  ]
+};
+---
+<BaseLayout title={`${item.detailTitle} | MulebuyHub FAQ`} description={item.answer}>
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / <a href="/faq/">FAQ</a> / {item.question}</div>
+        <p class="eyebrow">MulebuyHub FAQ</p>
+        <h1>{item.detailTitle}</h1>
+        <p class="lead">{item.detailIntro}</p>
+      </div>
+    </section>
+    <section class="section">
+      <article class="faq-detail">
+        {item.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            <p>{section.body}</p>
+          </section>
+        ))}
+        <section>
+          <h2>Reference Links</h2>
+          <div class="reference-list">
+            {item.sourceLinks.map((source) => (
+              <a href={source.url.startsWith("/") ? source.url : safeExternalUrl(source.url)} target="_blank" rel="nofollow noopener">{source.label}</a>
+            ))}
+          </div>
+        </section>
+      </article>
+    </section>
+  </main>
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
+</BaseLayout>

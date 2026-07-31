@@ -1,0 +1,119 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { categories, products } from "../data/catalog";
+
+const qcStatusCounts = products.reduce<Record<string, number>>((counts, product) => {
+  counts[product.qc] = (counts[product.qc] ?? 0) + 1;
+  return counts;
+}, {});
+
+const qcSteps = [
+  {
+    title: "Match the listing",
+    body: "Compare the spreadsheet title, preview image, color, material, size options, and source page before adding a product to your haul."
+  },
+  {
+    title: "Check warehouse photos",
+    body: "Use QC photos to inspect shape, logo placement, stitching, color, hardware, tags, packaging, and obvious defects after the item arrives at the agent warehouse."
+  },
+  {
+    title: "Decide before shipping",
+    body: "Approve, exchange, return, or request extra photos before international shipping. Once a parcel leaves the warehouse, correction options become limited."
+  }
+];
+
+const qcChecklist = [
+  "Product title and image match the item you meant to order",
+  "Color, material, print, logos, hardware, and trims look consistent",
+  "Size tag, measurements, and fit notes match your chosen variant",
+  "No obvious stains, scratches, missing parts, damaged packaging, or wrong model",
+  "Source reference and marketplace search result still point to the expected product"
+];
+
+const sampleProducts = products.slice(0, 8);
+---
+<BaseLayout title="Mulebuy QC Photos Guide | Warehouse Checks & Shipping Checklist" description="Use this Mulebuy QC photos guide to inspect product images, warehouse photos, spreadsheet notes, source links, and shipping checklist details before a haul.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / QC</div>
+        <p class="eyebrow">MulebuyHub QC center</p>
+        <h1>Mulebuy QC Photos Checklist</h1>
+        <p class="lead">A dedicated review hub for checking spreadsheet finds, product images, warehouse QC photos, category context, and QC notes before you open source links or ship a haul.</p>
+        <div class="spreadsheet-summary" aria-label="QC summary">
+          <span><strong>{products.length}</strong> products tracked</span>
+          <span><strong>{categories.length}</strong> categories covered</span>
+          <span><strong>{Object.keys(qcStatusCounts).length}</strong> QC note type</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>QC Workflow</h2>
+        <p>Use these steps as a practical flow from product discovery to warehouse-stage approval.</p>
+      </div>
+      <div class="compare-grid">
+        {qcSteps.map((step) => (
+          <article class="compare-card">
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="qc-layout">
+        <article class="qc-panel">
+          <h2>QC Checklist</h2>
+          <ul class="qc-checklist">
+            {qcChecklist.map((item) => <li>{item}</li>)}
+          </ul>
+        </article>
+        <article class="qc-panel">
+          <h2>QC Note Coverage</h2>
+          <div class="qc-status-list">
+            {Object.entries(qcStatusCounts).map(([status, count]) => (
+              <div>
+                <span>{status}</span>
+                <strong>{count}</strong>
+              </div>
+            ))}
+          </div>
+          <p class="meta">Current catalog entries use MaisonLooks image references as the visible QC source marker.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Sample QC Finds</h2>
+        <p>Open a product page to review its image, source label, category, size notes, and reference link.</p>
+      </div>
+      <div class="finds-grid related-grid">
+        {sampleProducts.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`Review QC for ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.category} / {product.qc}</div>
+              <div class="tag-list">{product.tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">Review QC</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

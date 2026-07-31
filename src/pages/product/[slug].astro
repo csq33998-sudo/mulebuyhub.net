@@ -1,0 +1,135 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import { getCategory, getProductsByCategory, products } from "../../data/catalog";
+import { safeExternalUrl, safeJsonLd } from "../../utils/security";
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props;
+const category = getCategory(product.category);
+const related = getProductsByCategory(product.category).filter((item) => item.slug !== product.slug).slice(0, 4);
+const weidianPurchaseUrl = safeExternalUrl(product.sourceUrl, "https://weidian.com/");
+const maisonLooksUrl = safeExternalUrl(product.maisonUrl);
+const detailRows = [
+  ["Brand", product.brand],
+  ["Seller", product.shopName],
+  ["Source", product.source],
+  ["Color", product.color],
+  ["Material", product.material],
+  ["Fit", product.fit],
+  ["Updated", product.updated]
+];
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": product.title,
+  "image": product.image,
+  "description": product.description,
+  "brand": {
+    "@type": "Brand",
+    "name": product.brand
+  },
+  "category": category?.name,
+  "offers": {
+    "@type": "Offer",
+    "price": product.price.replace(/[^\d.]/g, ""),
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": weidianPurchaseUrl
+  }
+};
+---
+<BaseLayout title={`${product.title} | Mulebuy Spreadsheet Find`} description={`${product.title} from the Mulebuy spreadsheet with price, QC note, category, source platform, and updated find details.`}>
+  <Header />
+  <main>
+    <section class="text-page product-page">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / <a href={`/category/${product.category}/`}>{category?.name}</a> / {product.title}</div>
+        <div class="product-shell">
+          <div class="product-detail-media">
+            <img src={product.image} alt={product.imageAlt} loading="eager" />
+          </div>
+          <div class="product-detail-copy">
+            <p class="eyebrow">Mulebuy spreadsheet find</p>
+            <h1>{product.title}</h1>
+            <p class="lead">{product.description}</p>
+            <div class="product-price-line">
+              <span class="price xl">{product.price}</span>
+              <span class="source-chip">{product.rating} rating</span>
+              <span class="source-chip">{product.qc}</span>
+            </div>
+            <div class="tag-list">{product.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+            <div class="hero-actions">
+              <a class="button" href={weidianPurchaseUrl} target="_blank" rel="nofollow noopener">Shop on Weidian</a>
+              <a class="button secondary" href={maisonLooksUrl} target="_blank" rel="nofollow noopener">Find on MaisonLooks</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title compact">
+        <div>
+          <p class="eyebrow">Product details</p>
+          <h2>Spreadsheet card</h2>
+        </div>
+        <p>Use these fields when comparing the seller page, warehouse photos, and haul route cost.</p>
+      </div>
+      <div class="detail-grid">
+        {detailRows.map(([label, value]) => (
+          <div class="detail-cell">
+            <span>{label}</span>
+            <strong>{value}</strong>
+          </div>
+        ))}
+      </div>
+      {product.sizes.length > 0 && (
+        <div class="size-panel">
+          <p class="eyebrow">Available size labels</p>
+          <div class="tag-list">{product.sizes.map((size) => <span class="tag">{size}</span>)}</div>
+        </div>
+      )}
+    </section>
+
+    <section class="section">
+      <div class="seo-cluster">
+        <p class="eyebrow">QC decision matrix</p>
+        <h2>Before buying</h2>
+        <p>Compare the product photo with the seller page, then request warehouse photos for the front, back, label, sole or hardware, and measurement points. If sizing, color, or branding details are off, choose another row in the same category before shipping the parcel.</p>
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section class="section">
+        <div class="section-title compact">
+          <div>
+            <p class="eyebrow">Recommended next reads</p>
+            <h2>More {category?.name} finds</h2>
+          </div>
+        </div>
+        <div class="finds-grid related-grid">
+          {related.map((item) => (
+            <a class="find-card" href={`/product/${item.slug}/`}>
+              <div class="find-media">
+                <img src={item.image} alt={item.imageAlt} loading="lazy" />
+              </div>
+              <div class="find-title">{item.title}</div>
+              <div class="find-foot">
+                <span class="price">{item.price}</span>
+                <span class="source-chip">{item.brand}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
+</BaseLayout>

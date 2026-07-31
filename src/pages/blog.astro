@@ -1,0 +1,70 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { products } from "../data/catalog";
+import { blogPosts } from "../data/blog";
+
+const featuredProducts = products.slice(0, 3);
+---
+<BaseLayout title="Mulebuy Blog | Guides, QC Tips & Spreadsheet Updates" description="Read MulebuyHub blog posts about spreadsheet browsing, QC photo checks, category finds, product links, and safer haul planning.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Blog</div>
+        <p class="eyebrow">MulebuyHub blog</p>
+        <h1>Blog</h1>
+        <p class="lead">Guides, QC notes, spreadsheet tips, and category browsing advice for using MulebuyHub more efficiently.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Latest Posts</h2>
+        <p>Practical articles for reading spreadsheet rows, comparing products, and checking QC details before opening source links.</p>
+      </div>
+      <div class="guide-grid">
+        {blogPosts.map((post) => (
+          <a class="guide-card" href={`/blog/${post.slug}/`}>
+            <p class="eyebrow">{post.category}</p>
+            <h3>{post.title}</h3>
+            <p>{post.description}</p>
+            <div class="post-meta compact">
+              <span>{post.date}</span>
+              <span>{post.readingTime}</span>
+            </div>
+            <span class="read-more">Read post</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Featured Spreadsheet Finds</h2>
+        <p>Recent product examples that pair blog guidance with real spreadsheet rows.</p>
+      </div>
+      <div class="finds-grid category-product-grid">
+        {featuredProducts.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.category} / {product.qc}</div>
+              <div class="tag-list">{product.tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">Open find</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

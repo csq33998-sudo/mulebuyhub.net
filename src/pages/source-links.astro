@@ -1,0 +1,85 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { products } from "../data/catalog";
+
+const sourceCounts = products.reduce<Record<string, number>>((counts, product) => {
+  counts[product.source] = (counts[product.source] ?? 0) + 1;
+  return counts;
+}, {});
+
+const examples = products.slice(0, 8);
+---
+<BaseLayout title="Mulebuy Source Links | Taobao, Weidian, 1688 & QC References" description="Understand Mulebuy source links for spreadsheet finds, including Taobao, Weidian, 1688, MaisonLooks references, QC notes, and seller verification.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Source Links</div>
+        <p class="eyebrow">Mulebuy link verification</p>
+        <h1>Mulebuy Source Links</h1>
+        <p class="lead">Use this page to understand how spreadsheet source links, MaisonLooks references, QC notes, and seller pages fit together before you add an item to a Mulebuy haul.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Source Link Coverage</h2>
+        <p>Each spreadsheet row should make the original marketplace or reference path easy to verify.</p>
+      </div>
+      <div class="qc-status-list">
+        {Object.entries(sourceCounts).map(([source, count]) => (
+          <div>
+            <span>{source}</span>
+            <strong>{count}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title compact">
+        <div>
+          <p class="eyebrow">Verification workflow</p>
+          <h2>How to use source links</h2>
+        </div>
+      </div>
+      <div class="compare-grid">
+        <article class="compare-card">
+          <h3>Check the listing</h3>
+          <p>Confirm the seller page still matches the spreadsheet title, preview image, variant, price, and product category.</p>
+        </article>
+        <article class="compare-card">
+          <h3>Compare references</h3>
+          <p>Use MaisonLooks or product-page references to compare images and labels before relying on the marketplace link.</p>
+        </article>
+        <article class="compare-card">
+          <h3>Finish with QC</h3>
+          <p>After warehouse arrival, use QC photos to confirm the physical item before shipping or requesting extra inspection.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Example Source Links</h2>
+        <p>Open a product page first, then use the seller and reference links from that focused page.</p>
+      </div>
+      <div class="product-table">
+        {examples.map((product) => (
+          <a class="product-row" href={`/product/${product.slug}/`}>
+            <div>
+              <div class="product-title">{product.title}</div>
+              <div class="meta">{product.source} / {product.qc} / Updated {product.updated}</div>
+              <div class="tag-list">{product.tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="price">{product.price}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

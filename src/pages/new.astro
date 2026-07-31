@@ -1,0 +1,159 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { products } from "../data/catalog";
+
+const newestProducts = [...products].sort((a, b) => b.updated.localeCompare(a.updated));
+const latestDate = newestProducts[0]?.updated ?? "";
+const latestBatch = newestProducts.filter((product) => product.updated === latestDate);
+const featuredNewProducts = newestProducts.slice(0, 12);
+const platformFacts = [
+  {
+    platform: "Mulebuy",
+    signal: "Best used as the live checkout step after spreadsheet discovery.",
+    buyerMeaning: "Confirm the product link, options, domestic shipping, warehouse status, and final parcel route before payment."
+  },
+  {
+    platform: "Superbuy",
+    signal: "Public docs split cost into product cost, international shipping, and optional value-added services.",
+    buyerMeaning: "Use it as a benchmark for landed-cost thinking: item price and final parcel cost are different numbers."
+  },
+  {
+    platform: "CSSBuy",
+    signal: "Public pages highlight parcel forwarding, reinforced packaging, and warehouse storage.",
+    buyerMeaning: "A useful comparison point when you care about consolidation timing, packaging choices, and route planning."
+  },
+  {
+    platform: "AllChinaBuy",
+    signal: "Public positioning centers on broad China marketplace buying, inspection, photography, and storage.",
+    buyerMeaning: "Good to compare as an alternative agent, but final routes and restrictions still need live checkout verification."
+  }
+];
+
+const workflowSteps = [
+  {
+    number: "01",
+    title: "Start with the item type",
+    body: "Use category pages or the spreadsheet to narrow the product lane before opening source links."
+  },
+  {
+    number: "02",
+    title: "Check the full cost path",
+    body: "Track product price, domestic shipping, optional services, storage time, international route, and route restrictions."
+  },
+  {
+    number: "03",
+    title: "Make QC the decision point",
+    body: "Use product images, QC notes, and warehouse photos to decide whether to ship, exchange, return, or request more photos."
+  }
+];
+---
+<BaseLayout title="New Mulebuy Finds | Latest Spreadsheet Product Updates" description="Browse the newest MulebuyHub product updates with latest spreadsheet rows, product images, QC notes, prices, and source references.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / New</div>
+        <p class="eyebrow">New buyer research</p>
+        <h1>New Mulebuy Agent Research</h1>
+        <p class="lead">A new-buyer hub for comparing spreadsheet finds, QC photos, storage timing, shipping-route math, and the point where a product link becomes a real parcel decision.</p>
+        <div class="spreadsheet-summary" aria-label="New finds summary">
+          <span><strong>{latestBatch.length}</strong> latest batch</span>
+          <span><strong>{latestDate}</strong> updated</span>
+          <span><strong>{products.length}</strong> total products</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Platform Facts at a Glance</h2>
+        <p>Use these signals to compare the agent step after you find an item in the spreadsheet.</p>
+      </div>
+      <div class="research-table">
+        <div class="research-row research-head">
+          <span>Platform</span>
+          <span>Public signal</span>
+          <span>Buyer meaning</span>
+        </div>
+        {platformFacts.map((fact) => (
+          <div class="research-row">
+            <strong>{fact.platform}</strong>
+            <span>{fact.signal}</span>
+            <span>{fact.buyerMeaning}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>The Facts That Matter Before You Pay</h2>
+        <p>Comparable New pages focus less on showing everything and more on what changed, what is safe to inspect, and what needs live verification.</p>
+      </div>
+      <div class="compare-grid">
+        <article class="compare-card">
+          <h3>Free purchase service is not final cost</h3>
+          <p>Budget for product price, domestic shipping, international shipping, optional photos, insurance, packaging, route limits, and possible destination-side charges.</p>
+        </article>
+        <article class="compare-card">
+          <h3>Storage has a deadline</h3>
+          <p>Agent warehouses commonly publish a free storage window. Slow consolidation can turn a cheap find into a deadline problem, so track arrival dates and parcel timing.</p>
+        </article>
+        <article class="compare-card">
+          <h3>QC photos are the real checkpoint</h3>
+          <p>For shoes, bags, hoodies, jackets, electronics, and fragrance items, use QC photos to check shape, labels, stitching, dimensions, packaging, and route risk before shipping.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Recommended Workflow for New Buyers</h2>
+        <p>This keeps the New page useful even when the latest product batch shares the same update date.</p>
+      </div>
+      <div class="workflow-grid">
+        {workflowSteps.map((step) => (
+          <article class="workflow-card">
+            <span>{step.number}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Latest Spreadsheet Samples</h2>
+        <p>Only a limited latest set is shown here. Use Finds for the full catalog and Spreadsheet for the dense table view.</p>
+      </div>
+      <div class="finds-grid">
+        {featuredNewProducts.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.category} / Updated {product.updated}</div>
+              <div class="tag-list">{product.tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">{product.qc}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="/spreadsheet/">Open Spreadsheet</a>
+        <a class="button secondary" href="/qc/">Read QC Checklist</a>
+        <a class="button secondary" href="/finds/">Browse All Finds</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

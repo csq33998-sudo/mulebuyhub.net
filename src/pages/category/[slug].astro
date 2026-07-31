@@ -1,0 +1,100 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import { categories, getProductsByCategory } from "../../data/catalog";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const products = getProductsByCategory(category.slug);
+const featured = products[0];
+const checkpoints = [
+  { title: "Shape", body: `Compare the ${category.name.toLowerCase()} silhouette, proportions, and logo placement before shipping.` },
+  { title: "Build", body: "Check stitching, print edges, hardware, fabric texture, and packaging against the source photos." },
+  { title: "Size", body: "Ask for measurement photos when fit matters, then compare them with an item you already own." }
+];
+---
+<BaseLayout title={`Mulebuy ${category.name} Spreadsheet 2026 | QC Finds & Links`} description={`Browse Mulebuy ${category.name.toLowerCase()} finds with prices, QC notes, source labels, and updated spreadsheet-style product pages.`}>
+  <Header />
+  <main>
+    <section class="text-page">
+      <div class="section category-landing">
+        <div>
+          <div class="crumbs"><a href="/">Home</a> / Category / {category.name}</div>
+          <p class="eyebrow">Mulebuy {category.name} spreadsheet</p>
+          <h1>Mulebuy {category.name} finds with QC notes.</h1>
+          <p class="lead">{category.description} This page collects {products.length} unique MaisonLooks-sourced product cards with non-repeated images, prices, seller labels, and detail pages.</p>
+          <div class="hero-actions">
+            <a class="button" href="#spreadsheet-rows">Spreadsheet rows</a>
+            <a class="button secondary" href="#qc-checkpoints">QC checkpoints</a>
+          </div>
+        </div>
+        {featured && (
+          <a class="category-feature" href={`/product/${featured.slug}/`}>
+            <img src={featured.image} alt={featured.imageAlt} loading="eager" />
+            <span>{featured.brand}</span>
+            <strong>{featured.title}</strong>
+          </a>
+        )}
+      </div>
+    </section>
+
+    <section class="section" id="spreadsheet-rows">
+      <div class="section-title compact">
+        <div>
+          <p class="eyebrow">Spreadsheet rows</p>
+          <h2>{category.name} product details</h2>
+        </div>
+        <p>{products.length} unique products from streetstyle.maisonlooks.com. Each row opens an indexable product detail page.</p>
+      </div>
+      <div class="finds-grid category-product-grid">
+        {products.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.brand} / {product.source} / {product.qc}</div>
+              <div class="tag-list">{product.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">{product.rating}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section" id="qc-checkpoints">
+      <div class="section-title compact">
+        <div>
+          <p class="eyebrow">QC checkpoints</p>
+          <h2>How to evaluate {category.name.toLowerCase()} before shipping.</h2>
+        </div>
+      </div>
+      <div class="compare-grid">
+        {checkpoints.map((item) => (
+          <article class="compare-card">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="seo-cluster">
+        <p class="eyebrow">Buyer workflow</p>
+        <h2>QC, sizing and route checks</h2>
+        <p>Open the product, review the MaisonLooks source entry, then compare the marketplace reference against recent warehouse photos. Keep color, material, sizing, and landed shipping cost in the same decision before adding the item to a haul.</p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

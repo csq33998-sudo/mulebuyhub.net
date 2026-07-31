@@ -1,0 +1,135 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { categories, guides, products, totalFinds } from "../data/catalog";
+import { faq } from "../data/faq";
+import { safeJsonLd } from "../utils/security";
+
+const title = "Mulebuy Spreadsheet 2026 | Verified Finds, QC Photos & Links";
+const description = "Browse the Mulebuy spreadsheet for updated shoes, hoodies, t-shirts, jackets, accessories, QC notes, prices, and shopping source links.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faq.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+};
+---
+<BaseLayout title={title} description={description}>
+  <Header />
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-inner hero-grid">
+        <div>
+          <p class="eyebrow">Updated Mulebuy links, categories, and QC notes</p>
+          <h1>Mulebuy Spreadsheet 2026</h1>
+          <p class="lead">
+            A fast spreadsheet-style directory for Mulebuy finds: shoes, hoodies, t-shirts,
+            jackets, pants, accessories, QC photo notes, price ranges, and source platforms in one place.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="/finds/">Browse Finds</a>
+            <a class="button secondary" href="https://streetstyle.maisonlooks.com/" target="_blank" rel="nofollow noopener">open mulebuy spreadsheet</a>
+          </div>
+          <form class="hero-search" action="https://streetstyle.maisonlooks.com/en/search" method="get" target="_blank">
+            <label class="sr-only" for="maisonlooks-search">Search MaisonLooks</label>
+            <input id="maisonlooks-search" name="q" type="search" placeholder="Search MaisonLooks products" autocomplete="off" />
+            <button type="submit" aria-label="Search MaisonLooks">
+              <span class="search-icon" aria-hidden="true"></span>
+              <span>Search</span>
+            </button>
+          </form>
+        </div>
+        <div class="hero-visual">
+          <img class="hero-image" src="/og.png" alt="MulebuyHub spreadsheet preview with product rows and category filters" loading="eager" />
+          <div class="stats" aria-label="Catalog statistics">
+            <div class="stat"><strong>{totalFinds.toLocaleString()}+</strong><span>tracked finds</span></div>
+            <div class="stat"><strong>{categories.length}</strong><span>shopping categories</span></div>
+            <div class="stat"><strong>2026</strong><span>SEO-ready guide hub</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Shop by Mulebuy Category</h2>
+        <p>Dedicated category pages help users and search engines find the right part of the spreadsheet without digging through one long list.</p>
+      </div>
+      <div class="category-grid">
+        {categories.map((category) => (
+          <a class="category-card" href={`/category/${category.slug}/`}>
+            <div class="category-media">
+              <img src={category.image} alt={category.imageAlt} loading="lazy" />
+            </div>
+            <div class="category-main">
+              <h3>{category.name}</h3>
+              <span class="count" style={`background:${category.accent}`}>{category.count.toLocaleString()}+ finds</span>
+            </div>
+            <p>{category.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Fresh Spreadsheet Picks</h2>
+        <p>Each product has a clean URL, category context, source platform, price signal, and QC note for stronger long-tail search coverage.</p>
+      </div>
+      <div class="product-table">
+        {products.slice(0, 8).map((product) => (
+          <a class="product-row" href={`/product/${product.slug}/`}>
+            <div>
+              <div class="product-title">{product.title}</div>
+              <div class="meta">{product.source} · {product.qc} · Rating {product.rating}</div>
+              <div class="tag-list">{product.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="price">{product.price}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Mulebuy Guides</h2>
+        <p>Guide pages target tutorial searches around spreadsheet usage, QC checks, and best finds.</p>
+      </div>
+      <div class="guide-grid">
+        {guides.map((guide) => (
+          <a class="guide-card" href={`/guides/${guide.slug}/`}>
+            <h3>{guide.title}</h3>
+            <p>{guide.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>FAQ</h2>
+        <p>Short answers match the questions people ask before using a Mulebuy spreadsheet.</p>
+      </div>
+      <div class="faq-grid">
+        {faq.map((item) => (
+          <a class="faq-item" href={`/faq/${item.slug}/`} aria-label={`Read ${item.question}`}>
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
+            <span class="read-more">Read more</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
+</BaseLayout>

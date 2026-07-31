@@ -1,0 +1,108 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { categories, products } from "../data/catalog";
+import { safeJsonLd } from "../utils/security";
+
+const newestProducts = [...products].sort((a, b) => b.updated.localeCompare(a.updated)).slice(0, 6);
+const checklist = [
+  "Confirm the source link still shows the expected item, color, size, and seller page.",
+  "Compare the spreadsheet image with warehouse QC photos before approving the parcel.",
+  "Check measurements, weight, material, packaging, fragile parts, and route restrictions.",
+  "Estimate product price, domestic shipping, optional photos, packaging, insurance, and international shipping together.",
+  "Resolve exchanges, returns, missing items, damaged packaging, or unclear photos before submitting the parcel."
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Mulebuy Shipping Checklist",
+  "description": "A Mulebuy shipping checklist for checking QC photos, source links, product details, costs, and parcel readiness before international shipping.",
+  "step": checklist.map((item, index) => ({
+    "@type": "HowToStep",
+    "position": index + 1,
+    "name": item
+  }))
+};
+---
+<BaseLayout title="Mulebuy Shipping Checklist | QC Photos, Costs & Source Links" description="Use this Mulebuy shipping checklist to verify QC photos, source links, product details, route costs, packaging, and parcel readiness before shipping.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Shipping Checklist</div>
+        <p class="eyebrow">Mulebuy parcel planning</p>
+        <h1>Mulebuy Shipping Checklist</h1>
+        <p class="lead">A practical checklist for turning Mulebuy spreadsheet finds into a cleaner parcel decision: source links, QC photos, costs, dimensions, route restrictions, and final approval.</p>
+        <div class="spreadsheet-summary" aria-label="Shipping checklist summary">
+          <span><strong>{products.length}</strong> product examples</span>
+          <span><strong>{categories.length}</strong> categories</span>
+          <span><strong>5</strong> shipping checks</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Before You Ship</h2>
+        <p>Use this flow after choosing a find and before submitting an international parcel.</p>
+      </div>
+      <article class="qc-panel">
+        <ul class="qc-checklist">
+          {checklist.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-title compact">
+        <div>
+          <p class="eyebrow">Shipping decisions</p>
+          <h2>QC, cost, and route checks</h2>
+        </div>
+      </div>
+      <div class="compare-grid">
+        <article class="compare-card">
+          <h3>QC photos</h3>
+          <p>Inspect shape, color, logos, stitching, size tags, hardware, packaging, and visible defects before approving a product for shipping.</p>
+        </article>
+        <article class="compare-card">
+          <h3>Source links</h3>
+          <p>Reopen the source link to verify that the seller page still matches the spreadsheet row and that variants have not changed.</p>
+        </article>
+        <article class="compare-card">
+          <h3>Shipping math</h3>
+          <p>Estimate item cost, domestic shipping, optional services, package weight, volumetric size, insurance, and route limits as one decision.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Recent Finds to Check</h2>
+        <p>Use these sample rows to practice moving from product discovery to QC and shipping approval.</p>
+      </div>
+      <div class="finds-grid related-grid">
+        {newestProducts.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`Check shipping readiness for ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.category} / {product.qc}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">Check QC</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { faq } from "../data/faq";
+import { safeJsonLd } from "../utils/security";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faq.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+};
+---
+<BaseLayout title="Mulebuy FAQ | Spreadsheet, QC Photos & Product Links" description="Answers to common questions about MulebuyHub spreadsheets, product categories, QC notes, and updated source links.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / FAQ</div>
+        <p class="eyebrow">MulebuyHub help</p>
+        <h1>FAQ</h1>
+        <p class="lead">Quick answers for using the Mulebuy spreadsheet, browsing category pages, and reading QC notes before opening product links.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="faq-grid">
+        {faq.map((item) => (
+          <a class="faq-item" href={`/faq/${item.slug}/`} aria-label={`Read ${item.question}`}>
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
+            <span class="read-more">Read more</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
+</BaseLayout>

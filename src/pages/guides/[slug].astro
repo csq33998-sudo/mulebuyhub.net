@@ -1,0 +1,37 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import { guides } from "../../data/catalog";
+
+export function getStaticPaths() {
+  return guides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+---
+<BaseLayout title={`${guide.title} | MulebuyHub`} description={guide.description}>
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Guides / {guide.title}</div>
+        <p class="eyebrow">Mulebuy Guide</p>
+        <h1>{guide.title}</h1>
+        <p class="lead">{guide.description}</p>
+      </div>
+    </section>
+    <section class="section">
+      <article class="content">
+        {guide.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            <p>{section.body}</p>
+          </section>
+        ))}
+      </article>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

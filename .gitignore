@@ -1,0 +1,11 @@
+.astro/
+dist/
+node_modules/
+dev-server.log
+dev-server.err.log
+.pnpm-store/
+maisonlooks-products.html
+.cache/
+.tmp/
+preview.log
+preview.err.log

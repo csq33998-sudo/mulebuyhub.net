@@ -1,0 +1,9 @@
+import { defineConfig } from "astro/config";
+
+export default defineConfig({
+  site: "https://mulebuyhub.net",
+  output: "static",
+  devToolbar: {
+    enabled: false
+  }
+});

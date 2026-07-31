@@ -1,0 +1,71 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import { blogPosts } from "../../data/blog";
+import { products } from "../../data/catalog";
+
+export function getStaticPaths() {
+  return blogPosts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const relatedProducts = products.slice(0, 4);
+---
+<BaseLayout title={`${post.title} | MulebuyHub Blog`} description={post.description}>
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / <a href="/blog/">Blog</a> / {post.title}</div>
+        <p class="eyebrow">{post.category}</p>
+        <h1>{post.title}</h1>
+        <p class="lead">{post.description}</p>
+        <div class="post-meta">
+          <span>{post.date}</span>
+          <span>{post.readingTime}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <article class="content blog-content">
+        {post.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            <p>{section.body}</p>
+          </section>
+        ))}
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Related Finds</h2>
+        <p>Use these product pages as examples while applying the blog workflow.</p>
+      </div>
+      <div class="finds-grid related-grid">
+        {relatedProducts.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.category} / {product.qc}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">Open find</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

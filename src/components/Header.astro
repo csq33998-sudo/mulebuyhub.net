@@ -1,0 +1,205 @@
+---
+import { categories } from "../data/catalog";
+
+const languages = [
+  { code: "en", name: "English" },
+  { code: "de", name: "Deutsch" },
+  { code: "es", name: "Espanol" },
+  { code: "fr", name: "Francais" },
+  { code: "it", name: "Italiano" },
+  { code: "pl", name: "Polski" },
+  { code: "pt", name: "Portugues" },
+  { code: "ro", name: "Romana" },
+  { code: "sv", name: "Svenska" },
+  { code: "nl", name: "Nederlands" },
+  { code: "da", name: "Dansk" },
+  { code: "fi", name: "Suomi" },
+  { code: "el", name: "Greek" },
+  { code: "cs", name: "Cestina" },
+  { code: "hu", name: "Magyar" },
+  { code: "bg", name: "Bulgarian" },
+  { code: "sk", name: "Slovencina" },
+  { code: "hr", name: "Hrvatski" },
+  { code: "sl", name: "Slovenscina" },
+  { code: "lt", name: "Lietuviu" },
+  { code: "lv", name: "Latviesu" },
+  { code: "et", name: "Eesti" },
+  { code: "ga", name: "Gaeilge" },
+  { code: "mt", name: "Malti" },
+  { code: "zh-CN", name: "Chinese Simplified" },
+  { code: "ja", name: "Japanese" },
+  { code: "ko", name: "Korean" }
+];
+---
+<header class="site-header">
+  <a
+    class="promo-strip"
+    href="https://streetstyle.maisonlooks.com/"
+    target="_blank"
+    rel="nofollow noopener"
+    aria-label="More surprises await you"
+  >
+    <span class="promo-coin" aria-hidden="true">$</span>
+    <span>More surprises await you</span>
+    <span class="promo-coin" aria-hidden="true">$</span>
+  </a>
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/mulebuy-icon.png" alt="MulebuyHub logo" width="34" height="34" loading="eager" />
+      <span>MulebuyHub</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <details class="category-switcher">
+        <summary class="category-toggle">Categories <span class="category-caret" aria-hidden="true"></span></summary>
+        <div class="category-menu">
+          <a class="category-catalogue" href="https://streetstyle.maisonlooks.com/en/search" target="_blank" rel="nofollow noopener">
+            <span>Browse full catalogue</span>
+            <span>on MaisonLooks -></span>
+          </a>
+          {categories.map((category) => (
+            <a href={`/category/${category.slug}/`}>{category.name}</a>
+          ))}
+        </div>
+      </details>
+      <a href="/spreadsheet/">Spreadsheet</a>
+      <a href="/finds/">Finds</a>
+      <a href="/qc/">QC</a>
+      <a href="/shipping-checklist/">Shipping</a>
+      <a href="/source-links/">Links</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/guides/how-to-use-mulebuy-spreadsheet/">Guide</a>
+      <a href="/blog/">Blog</a>
+      <a href="/new/">New</a>
+      <details class="language-switcher nav-disclosure">
+        <summary class="language-toggle">G <span>Language</span> <span class="category-caret" aria-hidden="true"></span></summary>
+        <div class="language-menu">
+          {languages.map((language) => (
+            <button type="button" data-language-code={language.code}>{language.name}</button>
+          ))}
+        </div>
+      </details>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
+        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span data-theme-toggle-label>Dark</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div id="google_translate_element" class="translate-engine" aria-hidden="true"></div>
+
+<script>
+  declare global {
+    interface Window {
+      googleTranslateElementInit?: () => void;
+      google?: {
+        translate?: {
+          TranslateElement?: new (options: Record<string, unknown>, elementId: string) => void;
+        };
+      };
+    }
+  }
+
+  const navDisclosures = document.querySelectorAll("details.category-switcher, details.language-switcher");
+  const languageButtons = document.querySelectorAll<HTMLButtonElement>("[data-language-code]");
+  const themeToggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const themeToggleLabel = document.querySelector<HTMLElement>("[data-theme-toggle-label]");
+  const translateCookieName = "googtrans";
+  const themeStorageKey = "mulebuyhub-theme";
+
+  const getTranslateCode = () => {
+    const cookie = document.cookie
+      .split("; ")
+      .find((item) => item.startsWith(`${translateCookieName}=`));
+
+    return cookie?.split("/").pop() || "en";
+  };
+
+  const setTranslateCookie = (code: string) => {
+    const value = code === "en" ? "" : `/en/${code}`;
+    const expires = code === "en" ? "Thu, 01 Jan 1970 00:00:00 GMT" : "Fri, 31 Dec 9999 23:59:59 GMT";
+    const hostParts = window.location.hostname.split(".");
+    const domain = hostParts.length > 1 ? `; domain=.${hostParts.slice(-2).join(".")}` : "";
+
+    document.cookie = `${translateCookieName}=${value}; path=/; expires=${expires}`;
+    document.cookie = `${translateCookieName}=${value}; path=/; expires=${expires}${domain}`;
+  };
+
+  const markActiveLanguage = () => {
+    const currentCode = getTranslateCode();
+
+    languageButtons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.languageCode === currentCode);
+    });
+  };
+
+  const getTheme = () => document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+
+  const setTheme = (theme: "light" | "dark") => {
+    document.documentElement.dataset.theme = theme;
+
+    try {
+      localStorage.setItem(themeStorageKey, theme);
+    } catch {
+      // The visible theme can still change when persistent storage is unavailable.
+    }
+
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+      themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
+    }
+
+    if (themeToggleLabel) {
+      themeToggleLabel.textContent = theme === "dark" ? "Light" : "Dark";
+    }
+  };
+
+  window.googleTranslateElementInit = () => {
+    if (!window.google?.translate?.TranslateElement) {
+      return;
+    }
+
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: "en",
+        autoDisplay: false
+      },
+      "google_translate_element"
+    );
+  };
+
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof Node)) {
+      return;
+    }
+
+    navDisclosures.forEach((disclosure) => {
+      if (!disclosure.contains(target)) {
+        disclosure.removeAttribute("open");
+      }
+    });
+  });
+
+  languageButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const code = button.dataset.languageCode || "en";
+
+      setTranslateCookie(code);
+      markActiveLanguage();
+      document.querySelector(".language-switcher")?.removeAttribute("open");
+      window.location.reload();
+    });
+  });
+
+  themeToggle?.addEventListener("click", () => {
+    setTheme(getTheme() === "dark" ? "light" : "dark");
+  });
+
+  markActiveLanguage();
+  setTheme(getTheme());
+</script>
+
+<script is:inline src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

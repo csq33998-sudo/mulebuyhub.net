@@ -1,0 +1,40 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { products } from "../data/catalog";
+---
+<BaseLayout title="Mulebuy Finds | Updated Spreadsheet Product Links" description="Browse updated Mulebuy finds with product pages, categories, prices, QC notes, and shopping source labels.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Finds</div>
+        <h1>Mulebuy Finds Spreadsheet</h1>
+        <p class="lead">Browse a focused list of Mulebuy finds with clean product URLs, source labels, prices, QC notes, and category context.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="finds-grid">
+        {products.map((product) => (
+          <a class="find-card" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+            <div class="find-media">
+              <img src={product.image} alt={product.imageAlt} loading="lazy" />
+            </div>
+            <div>
+              <div class="find-title">{product.title}</div>
+              <div class="meta">{product.source} · {product.qc}</div>
+              <div class="tag-list">{product.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+            <div class="find-foot">
+              <span class="price">{product.price}</span>
+              <span class="source-chip">MaisonLooks</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { products, totalFinds } from "../data/catalog";
+import { safeExternalUrl } from "../utils/security";
+---
+<BaseLayout title="Mulebuy Spreadsheet | Product Links, Prices & QC Notes" description="Browse the MulebuyHub spreadsheet view with product images, categories, prices, QC notes, and updated source references.">
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / Spreadsheet</div>
+        <p class="eyebrow">Updated MulebuyHub spreadsheet</p>
+        <h1>Mulebuy Spreadsheet</h1>
+        <p class="lead">A row-by-row view of Mulebuy finds with images, categories, prices, QC notes, ratings, and source references.</p>
+        <div class="spreadsheet-summary" aria-label="Spreadsheet summary">
+          <span><strong>{products.length}</strong> listed products</span>
+          <span><strong>{totalFinds.toLocaleString()}+</strong> tracked finds</span>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="spreadsheet-shell">
+        <table class="spreadsheet-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>QC</th>
+              <th>Rating</th>
+              <th>Source</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr>
+                <td>
+                  <a class="sheet-image" href={`/product/${product.slug}/`} aria-label={`View ${product.title}`}>
+                    <img src={product.image} alt={product.imageAlt} loading="lazy" />
+                  </a>
+                </td>
+                <td>
+                  <a class="sheet-title" href={`/product/${product.slug}/`}>{product.title}</a>
+                  <div class="meta">{product.brand} / {product.shopName}</div>
+                </td>
+                <td>{product.category}</td>
+                <td><span class="price">{product.price}</span></td>
+                <td>{product.qc}</td>
+                <td>{product.rating}</td>
+                <td>
+                  <a class="sheet-source-link" href={safeExternalUrl(product.maisonUrl)} target="_blank" rel="nofollow noopener">
+                    MaisonLooks
+                  </a>
+                </td>
+                <td>
+                  <a class="sheet-link" href={safeExternalUrl(product.sourceUrl, "https://weidian.com/")} target="_blank" rel="nofollow noopener">Weidian</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
