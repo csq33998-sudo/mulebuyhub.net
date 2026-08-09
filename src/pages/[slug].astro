@@ -1,0 +1,41 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import { supportPages } from "../data/support-pages";
+
+export function getStaticPaths() {
+  return supportPages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page }
+  }));
+}
+
+const { page } = Astro.props;
+---
+<BaseLayout title={`${page.title} | MulebuyHub`} description={page.description}>
+  <Header />
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <div class="crumbs"><a href="/">Home</a> / {page.title}</div>
+        <p class="eyebrow">{page.eyebrow}</p>
+        <h1>{page.title}</h1>
+        <p class="lead">{page.description}</p>
+        <p class="updated-line">Last updated: {page.updated}</p>
+      </div>
+    </section>
+    <section class="section">
+      <article class="policy-content">
+        {page.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))}
+      </article>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

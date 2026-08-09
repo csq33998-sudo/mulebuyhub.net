@@ -1,6 +1,7 @@
 import { blogPosts } from "../data/blog";
 import { faq } from "../data/faq";
 import { categories, guides, products } from "../data/catalog";
+import { supportPages } from "../data/support-pages";
 
 const baseUrl = "https://mulebuyhub.net";
 const latestProductUpdate = products
@@ -24,9 +25,10 @@ const productRoutes = products.map((product) => ({ route: `/product/${product.sl
 const guideRoutes = guides.map((guide) => ({ route: `/guides/${guide.slug}/`, lastmod: "2026-07-30" }));
 const blogRoutes = blogPosts.map((post) => ({ route: `/blog/${post.slug}/`, lastmod: post.date }));
 const faqRoutes = faq.map((item) => ({ route: `/faq/${item.slug}/`, lastmod: "2026-07-30" }));
+const supportRoutes = supportPages.map((page) => ({ route: `/${page.slug}/`, lastmod: page.updated }));
 
 export function GET() {
-  const routes = [...staticRoutes, ...categoryRoutes, ...productRoutes, ...guideRoutes, ...blogRoutes, ...faqRoutes];
+  const routes = [...staticRoutes, ...supportRoutes, ...categoryRoutes, ...productRoutes, ...guideRoutes, ...blogRoutes, ...faqRoutes];
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes
